@@ -15,9 +15,18 @@ Records audio, identifies speakers, transcribes the session, and generates recap
 ## Requirements
 
 - Python 3.10+
-- CUDA-capable GPU recommended (CPU works but slower)
-- ~8GB+ VRAM for optimal performance
 - ffmpeg
+- **GPU (optional but recommended):** CUDA-capable NVIDIA GPU with 8GB+ VRAM
+- **CPU-only:** Works fine, just slower. Expect ~1-2x realtime (4hr session ≈ 4-8hr processing)
+
+### Hardware Recommendations
+
+| Setup | Model | Processing Time (4hr session) |
+|-------|-------|------------------------------|
+| RTX 5070 Ti | large-v3 | ~15-20 minutes |
+| RTX 3060 (12GB) | large-v3 | ~30-45 minutes |
+| CPU (i5-12400) | medium | ~4-6 hours |
+| CPU (i5-8257U) | medium | ~6-10 hours |
 
 ## Installation
 

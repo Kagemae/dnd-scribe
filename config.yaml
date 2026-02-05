@@ -4,16 +4,20 @@
 whisper:
   # Model size: tiny, base, small, medium, large-v2, large-v3
   # Larger = more accurate but slower and more VRAM
-  model: large-v3
+  # CPU recommendation: medium (good balance of speed/accuracy)
+  # GPU recommendation: large-v3 (best quality, needs ~8GB VRAM)
+  model: medium
   
   # Language (or "auto" for detection)
   language: en
   
   # Compute type: float16 (GPU), int8 (CPU), float32
-  compute_type: float16
+  # Auto-detected based on device, but can override
+  compute_type: int8
   
   # Device: cuda, cpu, or auto
-  device: auto
+  # Set to "cuda" once the 5070 Ti Ubuntu box is ready
+  device: cpu
 
 # Speaker diarization settings
 diarization:
