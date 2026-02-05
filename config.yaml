@@ -1,0 +1,78 @@
+# D&D Scribe Configuration
+
+# Whisper settings
+whisper:
+  # Model size: tiny, base, small, medium, large-v2, large-v3
+  # Larger = more accurate but slower and more VRAM
+  model: large-v3
+  
+  # Language (or "auto" for detection)
+  language: en
+  
+  # Compute type: float16 (GPU), int8 (CPU), float32
+  compute_type: float16
+  
+  # Device: cuda, cpu, or auto
+  device: auto
+
+# Speaker diarization settings
+diarization:
+  # Minimum number of speakers (if known)
+  min_speakers: null
+  
+  # Maximum number of speakers (if known)
+  max_speakers: 6
+  
+  # HuggingFace token for pyannote (required for diarization)
+  # Set via environment variable: HUGGINGFACE_TOKEN
+  # Or paste here (not recommended for public repos)
+  hf_token: null
+
+# Output settings
+output:
+  # Generate these output files
+  formats:
+    - json      # Full transcript with metadata
+    - txt       # Human-readable transcript
+    - srt       # Subtitles (optional)
+  
+  # Include timestamps in text output
+  timestamps: true
+  
+  # Group utterances by speaker (vs strictly chronological)
+  group_by_speaker: false
+
+# Recap generation settings
+recap:
+  # LLM provider: openai, local, clawdbot
+  provider: clawdbot
+  
+  # Model to use (if using OpenAI)
+  model: gpt-4o
+  
+  # Clawdbot gateway URL (if using clawdbot provider)
+  clawdbot_url: http://localhost:18789
+  
+  # Custom system prompt for recap generation
+  system_prompt: |
+    You are a D&D session scribe. Given a transcript of a tabletop RPG session,
+    create comprehensive session notes including:
+    
+    - **Session Summary**: A brief overview of what happened
+    - **Key Events**: Major plot points, discoveries, and decisions
+    - **Combat Encounters**: Brief summaries of any battles
+    - **NPC Interactions**: Notable conversations and new NPCs met
+    - **Character Moments**: Memorable roleplaying or character development
+    - **Loot & Rewards**: Items found, gold earned, etc.
+    - **Cliffhangers & Hooks**: Unresolved plot threads for next session
+    
+    Write in a narrative style that captures the adventure's tone.
+    Use the speaker names provided to attribute actions and dialogue.
+
+# Speaker name mapping
+# Update this after your first session to map speaker IDs to names
+speakers:
+  SPEAKER_00: "DM"
+  SPEAKER_01: "Player 1"
+  SPEAKER_02: "Player 2"
+  SPEAKER_03: "Player 3"

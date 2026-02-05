@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+sessions/
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+
+# Models (too large for git)
+models/
+
+# Secrets
+.env
+*.token
+
+# OS
+.DS_Store
+Thumbs.db
