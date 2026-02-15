@@ -28,7 +28,95 @@ Records audio, identifies speakers, transcribes the session, and generates recap
 | CPU (i5-12400) | medium | ~4-6 hours |
 | CPU (i5-8257U) | medium | ~6-10 hours |
 
-## Installation
+---
+
+## Installation (Windows with NVIDIA GPU)
+
+### Prerequisites
+
+1. **NVIDIA Drivers** — Make sure you have the latest drivers for your GPU
+   - Download from: https://www.nvidia.com/Download/index.aspx
+
+2. **CUDA Toolkit 12.1** — Required for GPU acceleration
+   - Download from: https://developer.nvidia.com/cuda-12-1-0-download-archive
+   - Select: Windows → x86_64 → 11 → exe (local)
+   - Run installer, default options are fine
+   - Verify: `nvcc --version` in a new terminal
+
+3. **Python 3.10+** — Get from Microsoft Store or python.org
+   - Verify: `python --version`
+
+4. **ffmpeg** — Required for audio processing
+   ```powershell
+   # Option 1: winget (easiest)
+   winget install ffmpeg
+
+   # Option 2: Download manually from https://ffmpeg.org/download.html
+   # Extract and add bin folder to PATH
+   ```
+   - Verify: `ffmpeg -version`
+
+5. **Git** — For cloning the repo
+   ```powershell
+   winget install Git.Git
+   ```
+
+### Setup
+
+```powershell
+# Clone the repo
+git clone https://github.com/kagemae/dnd-scribe.git
+cd dnd-scribe
+
+# Create virtual environment
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+# Install PyTorch with CUDA 12.1 support FIRST (important!)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# Verify CUDA is available
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"None\"}')"
+
+# Install remaining dependencies
+pip install -r requirements.txt
+```
+
+### Configure for GPU
+
+Edit `config.yaml`:
+
+```yaml
+whisper:
+  model: large-v3       # Best quality on GPU
+  compute_type: float16 # GPU-optimized
+  device: cuda          # Use GPU
+```
+
+### HuggingFace Token (Required for Speaker Diarization)
+
+Speaker diarization uses pyannote models which require a HuggingFace token:
+
+1. Create account at https://huggingface.co
+2. Accept the pyannote model licenses:
+   - https://huggingface.co/pyannote/speaker-diarization-3.1
+   - https://huggingface.co/pyannote/segmentation-3.0
+3. Create a token at https://huggingface.co/settings/tokens
+4. Add to your `.env` file:
+   ```
+   HUGGINGFACE_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxx
+   ```
+
+### Quick Test
+
+```powershell
+# Test with a short audio clip
+python scribe.py process test.wav --output ./test-output/
+```
+
+---
+
+## Installation (Linux/macOS)
 
 ```bash
 # Clone the repo
@@ -37,10 +125,13 @@ cd dnd-scribe
 
 # Create virtual environment
 python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# For GPU on Linux, install PyTorch with CUDA first:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
 ## Usage
