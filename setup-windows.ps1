@@ -39,8 +39,8 @@ Write-Host "Activating virtual environment..." -ForegroundColor Yellow
 & .\venv\Scripts\Activate.ps1
 
 # Install PyTorch with CUDA
-Write-Host "`nInstalling PyTorch with CUDA 12.1 support..." -ForegroundColor Yellow
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+Write-Host "`nInstalling PyTorch with CUDA 12.8 support..." -ForegroundColor Yellow
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
 
 # Check CUDA
 Write-Host "`nChecking CUDA availability..." -ForegroundColor Yellow

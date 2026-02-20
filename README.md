@@ -37,8 +37,8 @@ Records audio, identifies speakers, transcribes the session, and generates recap
 1. **NVIDIA Drivers** — Make sure you have the latest drivers for your GPU
    - Download from: https://www.nvidia.com/Download/index.aspx
 
-2. **CUDA Toolkit 12.1** — Required for GPU acceleration
-   - Download from: https://developer.nvidia.com/cuda-12-1-0-download-archive
+2. **CUDA Toolkit 12.8+** — Required for GPU acceleration
+   - Download from: https://developer.nvidia.com/cuda-downloads
    - Select: Windows → x86_64 → 11 → exe (local)
    - Run installer, default options are fine
    - Verify: `nvcc --version` in a new terminal
@@ -72,8 +72,8 @@ cd dnd-scribe
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 
-# Install PyTorch with CUDA 12.1 support FIRST (important!)
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# Install PyTorch with CUDA 12.8 support FIRST (important!)
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
 
 # Verify CUDA is available
 python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"None\"}')"
@@ -131,7 +131,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # For GPU on Linux, install PyTorch with CUDA first:
-# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
 ```
 
 ## Usage
