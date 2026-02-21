@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}D&D Scribe — Settings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Configure vocabulary and transcription preferences.</p>
+</div>
+
+<section class="card" style="max-width: 700px;">
+    <h2 class="section-title">Vocabulary</h2>
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Words listed here are fed to Whisper as a prompt, biasing it toward these spellings.
+        Add character names, locations, spells, and any terms your group uses.
+    </p>
+
+    <div id="vocab-editor">
+        <div id="vocab-list">
+            {% for word in vocabulary %}
+            <div class="vocab-row">
+                <input type="text" class="form-input vocab-input" value="{{ word }}">
+                <button type="button" class="vocab-remove-btn" title="Remove">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 0.75rem; display: flex; gap: 0.75rem; align-items: center;">
+            <button type="button" id="vocab-add-btn" class="btn btn-secondary btn-small">+ Add Term</button>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+                <span id="vocab-count">{{ vocabulary | length }}</span> terms
+            </span>
+        </div>
+
+        <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+            <button type="button" id="vocab-save-btn" class="btn btn-primary">Save Vocabulary</button>
+            <span id="vocab-save-status" style="font-size: 0.9rem; color: var(--text-muted);"></span>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const list = document.getElementById('vocab-list');
+    const addBtn = document.getElementById('vocab-add-btn');
+    const saveBtn = document.getElementById('vocab-save-btn');
+    const statusEl = document.getElementById('vocab-save-status');
+    const countEl = document.getElementById('vocab-count');
+
+    function createRow(value) {
+        const row = document.createElement('div');
+        row.className = 'vocab-row';
+        row.innerHTML = `<input type="text" class="form-input vocab-input" value="${escapeAttr(value)}">`
+            + `<button type="button" class="vocab-remove-btn" title="Remove">&times;</button>`;
+        row.querySelector('.vocab-remove-btn').addEventListener('click', () => {
+            row.remove();
+            updateCount();
+        });
+        return row;
+    }
+
+    function escapeAttr(s) {
+        return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
+
+    function updateCount() {
+        countEl.textContent = list.querySelectorAll('.vocab-row').length;
+    }
+
+    // Wire up existing remove buttons
+    list.querySelectorAll('.vocab-remove-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.closest('.vocab-row').remove();
+            updateCount();
+        });
+    });
+
+    // Add new row
+    addBtn.addEventListener('click', () => {
+        const row = createRow('');
+        list.appendChild(row);
+        row.querySelector('input').focus();
+        updateCount();
+    });
+
+    // Save
+    saveBtn.addEventListener('click', async () => {
+        const words = [];
+        list.querySelectorAll('.vocab-input').forEach(input => {
+            const v = input.value.trim();
+            if (v) words.push(v);
+        });
+
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+        statusEl.textContent = '';
+
+        try {
+            const resp = await fetch('/api/vocabulary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ vocabulary: words }),
+            });
+            if (!resp.ok) {
+                const err = await resp.json();
+                throw new Error(err.detail || 'Save failed');
+            }
+            const data = await resp.json();
+            statusEl.style.color = 'var(--accent-green)';
+            statusEl.textContent = `Saved ${data.count} terms`;
+            countEl.textContent = data.count;
+            setTimeout(() => { statusEl.textContent = ''; }, 3000);
+        } catch (err) {
+            statusEl.style.color = 'var(--accent-red)';
+            statusEl.textContent = 'Error: ' + err.message;
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Vocabulary';
+        }
+    });
+
+    // Allow Enter in an input to add a new row below
+    list.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.classList.contains('vocab-input')) {
+            e.preventDefault();
+            const row = createRow('');
+            e.target.closest('.vocab-row').after(row);
+            row.querySelector('input').focus();
+            updateCount();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}D&D Scribe — Identify Speakers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Identify Speakers</h1>
+    <p class="page-subtitle">
+        {{ job.session_name }} &mdash;
+        {{ speaker_samples | length }} speakers detected.
+        Review the sample lines and assign a name to each.
+    </p>
+</div>
+
+<form id="speakers-form" data-job-id="{{ job_id }}">
+    <div class="speakers-grid">
+        {% for speaker_id, info in speaker_samples.items() %}
+        <div class="speaker-card">
+            <div class="speaker-card-header">
+                <span class="speaker-card-id">{{ speaker_id }}</span>
+                <span class="speaker-card-count">{{ info.count }} segments</span>
+            </div>
+            <div class="speaker-card-name">
+                <input type="text"
+                       class="speaker-name-input"
+                       data-speaker-id="{{ speaker_id }}"
+                       placeholder="Enter name..."
+                       value="{{ default_names.get(speaker_id, '') }}"
+                       autocomplete="off">
+            </div>
+            <div class="speaker-card-samples">
+                {% for sample in info.samples %}
+                <div class="sample-line">
+                    <span class="sample-timestamp">{{ sample.start | timestamp }}</span>
+                    <span class="sample-text">"{{ sample.text }}"</span>
+                </div>
+                {% endfor %}
+                {% if not info.samples %}
+                <div class="sample-line">
+                    <span class="sample-text" style="color: var(--text-muted);">(only very short utterances detected)</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="speakers-actions">
+        <label class="skip-recap-label">
+            <input type="checkbox" id="skip-recap">
+            Skip recap generation
+        </label>
+        <button type="submit" class="btn btn-primary">Save & Continue</button>
+    </div>
+</form>
+{% endblock %}

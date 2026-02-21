@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}D&D Scribe — Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">The Scribe's Desk</h1>
+    <p class="page-subtitle">Upload a session recording to transcribe, identify speakers, and generate a recap.</p>
+</div>
+
+<!-- Upload Section -->
+<section class="upload-section">
+    <h2 class="section-title">New Session</h2>
+
+    <form id="upload-form" action="/api/jobs" method="post" enctype="multipart/form-data">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="session-name">Session Name</label>
+                <input type="text" id="session-name" name="session_name" class="form-input"
+                       placeholder="e.g. Whichlight Session 3" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Audio Source</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="source" value="upload" checked>
+                        Upload file
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="source" value="recording"
+                               {% if not recordings %}disabled{% endif %}>
+                        From recordings/
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div id="upload-group" class="form-group">
+            <label class="form-label" for="audio-file">Audio File</label>
+            <div class="file-input-wrapper">
+                <input type="file" id="audio-file" name="file"
+                       accept=".wav,.mp3,.m4a,.ogg,.flac">
+            </div>
+        </div>
+
+        <div id="recording-group" class="form-group" style="display:none">
+            <label class="form-label" for="recording-select">Select Recording</label>
+            <select id="recording-select" name="recording" class="form-select">
+                <option value="">-- choose a file --</option>
+                {% for rec in recordings %}
+                <option value="{{ rec }}">{{ rec }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Begin Transcription</button>
+    </form>
+</section>
+
+<!-- Sessions List -->
+<section>
+    <h2 class="section-title">Past Sessions</h2>
+
+    {% if sessions %}
+    <div id="session-list">
+        {% for s in sessions %}
+        <a href="/sessions/{{ s.id }}" class="session-item">
+            <div class="session-info">
+                <h3>{{ s.name or s.id }}</h3>
+                <div class="session-date">{{ s.date or '' }}</div>
+            </div>
+            <div class="session-badges">
+                {% if s.has_transcript %}
+                <span class="badge badge-transcript">Transcript</span>
+                {% endif %}
+                {% if s.has_recap %}
+                <span class="badge badge-recap">Recap</span>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">~</div>
+        <p>No sessions yet. Upload a recording to get started.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

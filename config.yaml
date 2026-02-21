@@ -6,26 +6,517 @@ whisper:
   # Larger = more accurate but slower and more VRAM
   # CPU recommendation: medium (good balance of speed/accuracy)
   # GPU recommendation: large-v3 (best quality, needs ~8GB VRAM)
-  model: medium
+  model: large-v3
   
   # Language (or "auto" for detection)
   language: en
   
   # Compute type: float16 (GPU), int8 (CPU), float32
   # Auto-detected based on device, but can override
-  compute_type: int8
+  compute_type: float16
   
   # Device: cuda, cpu, or auto
   # Set to "cuda" once the 5070 Ti Ubuntu box is ready
-  device: cpu
+  device: cuda
+
+  # Batch size for transcription. Lower = less VRAM, slower.
+  # 16 needs ~10GB+, 4 is safe for 8GB cards.
+  batch_size: 4
+
+  # Vocabulary prompt - helps Whisper recognize D&D-specific terms.
+  # List character names, locations, spells, items, etc. that your
+  # group uses frequently. Whisper will bias toward these spellings.
+vocabulary:
+
+  # ============================================
+  # THE HOURGLASS COVEN
+  # ============================================
+  - Bavlorna
+  - Bavlorna Blightstraw
+  - Skabatha
+  - Skabatha Nightshade
+  - Granny Nightshade
+  - Endelyn
+  - Endelyn Moongrave
+  - Dame Endelyn
+  - Hourglass Coven
+
+  # ============================================
+  # ZYBILNA / THE ARCHFEY
+  # ============================================
+  - Zybilna
+  - Iggwilv
+  - Tasha
+  - Natasha
+  - Archfey
+
+  # ============================================
+  # WITCHLIGHT CARNIVAL NPCs
+  # ============================================
+  - Mr. Witch
+  - Mr. Light
+  - Witch and Light
+  - Candlefoot
+  - Palasha
+  - Kettlesteam
+  - Nikolas Midnight
+  - Diana Cloppington
+  - Dirlagraun
+  - Burly
+  - Northwind
+  - Star
+  - Feathereen
+  - Zamorna
+
+  # ============================================
+  # HITHER NPCs
+  # ============================================
+  - Sir Talavar
+  - Jingle Jangle
+  - Agdon Longscarf
+  - Clapperclaw
+  - Sowpig
+  - Illig
+  - Morgort
+  - Gullop XIX
+  - Duke Ickrind
+  - Wigglewog
+  - Lornling
+  - Lornlings
+  - Charm
+  - Trinket
+
+  # ============================================
+  # THITHER NPCs
+  # ============================================
+  - Nib
+  - Amidor
+  - Pollenella
+  - Will of the Feywild
+  - Cradlefall
+  - Squirt
+  - Mishka
+  - Pincushion
+  - Little Oak
+  - Granny Nightshade
+  - Sowpig
+
+  # ============================================
+  # YON NPCs
+  # ============================================
+  - Gleam
+  - Glam
+  - Stagrot
+  - Mudlump
+  - Burosch
+  - Dubhforgail
+  - Korred
+
+  # ============================================
+  # VALOR'S CALL (Good League)
+  # ============================================
+  - Strongheart
+  - Mercion
+  - Molliver
+  - Elkhorn
+  - Ringlerun
+  - Valor's Call
+
+  # ============================================
+  # LEAGUE OF MALEVOLENCE (Evil League)
+  # ============================================
+  - Kelek
+  - Warduke
+  - Zarak
+  - Skylla
+  - Zargash
+  - League of Malevolence
+
+  # ============================================
+  # PLAYER CHARACTERS (Your Campaign)
+  # ============================================
+  - Thistle
+  - Wonderpaw
+  - Mr. Mistoffelees
+  - Vansel
+  - Wordsworth
+  - Twinkle
+
+  # ============================================
+  # LOCATIONS - WITCHLIGHT CARNIVAL
+  # ============================================
+  - Witchlight Carnival
+  - The Big Top
+  - Hall of Illusions
+  - Pixie Kingdom
+  - Dragonfly Rides
+  - Mystery Mine
+  - Snail Racing
+  - Lost and Found
+  - Calliope
+  - Thieves' Den
+  - Staff Area
+  - Carousel
+  - Feasting Orchard
+  - Gondola Swans
+
+  # ============================================
+  # LOCATIONS - PRISMEER (General)
+  # ============================================
+  - Prismeer
+  - The Feywild
+  - Palace of Heart's Desire
+  - Heart's Desire
+
+  # ============================================
+  # LOCATIONS - HITHER
+  # ============================================
+  - Hither
+  - Downfall
+  - Telemy Hill
+  - Brigands' Tollway
+  - Slanty Tower
+  - Queen's Way
+  - Bavlorna's Cottage
+  - Bavlorna's Garden
+
+  # ============================================
+  # LOCATIONS - THITHER
+  # ============================================
+  - Thither
+  - Loomlurch
+  - Wayward Pool
+  - Little Oak
+  - Nib's Cave
+  - Woodcutter's Axe
+
+  # ============================================
+  # LOCATIONS - YON
+  # ============================================
+  - Yon
+  - Motherhorn
+  - Fey Beacons
+  - Lockbury Henge
+  - The Orrery
+  - Theater
+  - Brigganock Mine
+
+  # ============================================
+  # CREATURES & MONSTER TYPES
+  # ============================================
+  - Bullywug
+  - Bullywugs
+  - Harengon
+  - Harengons
+  - Brigganock
+  - Brigganocks
+  - Campestri
+  - Campestris
+  - Darkling
+  - Darklings
+  - Darkling Elder
+  - Korred
+  - Korreds
+  - Meenlock
+  - Meenlocks
+  - Redcap
+  - Redcaps
+  - Quickling
+  - Quicklings
+  - Boggle
+  - Boggles
+  - Pixie
+  - Pixies
+  - Sprite
+  - Sprites
+  - Satyr
+  - Satyrs
+  - Faerie Dragon
+  - Will-o'-Wisp
+  - Will-o'-Wisps
+  - Displacer Beast
+  - Blink Dog
+  - Blink Dogs
+  - Jabberwock
+  - Bandersnatch
+  - Gelatinous Cube
+  - Treant
+  - Awakened Tree
+  - Awakened Shrub
+  - Tin Soldier
+  - Tin Soldiers
+  - Living Doll
+  - Living Dolls
+  - Peryton
+  - Perytons
+  - Green Hag
+  - Night Hag
+  - Annis Hag
+  - Hag
+  - Coven
+  - Galeb Duhr
+  - Shambling Mound
+  - Giant Snail
+  - Giant Crane
+  - Giant Dragonfly
+  - Strig
+  - Stench Kow
+  - Merrow
+  - Swarm of Campestris
+  - Animated Armor
+  - Flying Monkey
+  - Flying Monkeys
+  - Scarecrow
+  - Flameskull
+
+  # ============================================
+  # FEYWILD & SETTING TERMS
+  # ============================================
+  - Feywild
+  - Fey
+  - Fey Crossing
+  - Fey Realm
+  - Seelie
+  - Unseelie
+  - Seelie Court
+  - Unseelie Court
+  - Archfey
+  - Hag's Bargain
+  - Fey Bargain
+  - Fey Pact
+  - Rule of Three
+  - Rule of Hospitality
+  - Rule of Ownership
+  - Rule of Reciprocity
+  - Lost Things
+  - Stolen Things
+  - Domain of Delight
+  - Splinter Realm
+  - Splinter Realms
+  - Witchlight
+  - Witchlight Vane
+
+  # ============================================
+  # KEY ITEMS & ARTIFACTS
+  # ============================================
+  - Witchlight Vane
+  - Witchlight Watch
+  - Iggwilv's Cauldron
+  - Snicker-Snack
+  - Chromatic Rose
+  - Potion of Advantage
+  - Agdon's Scarf
+  - Longscarf
+  - Jingle Jangle's Keys
+  - Clapperclaw's Head
+  - Unicorn Horn
+  - Story Seeds
+  - Lost Property
+  - Carnival Ticket
+  - Carnival Prize
+  - Witchlight Butterfly
+  - Mood Cap
+
+  # ============================================
+  # STANDARD EQUIPMENT & ITEMS (Your Party)
+  # ============================================
+  - Forgery Kit
+  - Thieves' Tools
+  - Lockpicks
+  - Hand Crossbow
+  - Rapier
+  - Shortsword
+  - Longbow
+  - Component Pouch
+  - Spellcasting Focus
+  - Arcane Focus
+  - Druidic Focus
+  - Shield
+  - Studded Leather
+  - Leather Armor
+  - Half Plate
+  - Scimitar
+
+  # ============================================
+  # SPELLS & ABILITIES (Your Party)
+  # ============================================
+  # Bard Spells
+  - Bardic Inspiration
+  - Prestidigitation
+  - Healing Word
+  - Mage Hand
+  - Dissonant Whispers
+  - Vicious Mockery
+  - Minor Illusion
+  - Thunderwave
+  - Faerie Fire
+  - Tasha's Hideous Laughter
+  - Hideous Laughter
+  - Detect Magic
+  - Dispel Magic
+  - Charm Person
+  - Hold Person
+  - Shatter
+  - Invisibility
+  - Suggestion
+  - Counterspell
+  - Hypnotic Pattern
+  - Dimension Door
+  - Greater Invisibility
+  - Polymorph
+  - Cutting Words
+  - Song of Rest
+  - Jack of All Trades
+
+  # Druid Spells / Spore Druid
+  - Symbiotic Entity
+  - Halo of Spores
+  - Wild Shape
+  - Spreading Spores
+  - Fungal Infestation
+  - Druidcraft
+  - Entangle
+  - Goodberry
+  - Cure Wounds
+  - Moonbeam
+  - Spike Growth
+  - Pass Without Trace
+  - Call Lightning
+  - Conjure Animals
+  - Plant Growth
+  - Guardian of Nature
+  - Thorn Whip
+  - Produce Flame
+  - Shillelagh
+  - Chill Touch
+  - Blindness Deafness
+  - Animate Dead
+  - Gaseous Form
+  - Blight
+  - Confusion
+  - Cloudkill
+  - Contagion
+
+  # Rogue Abilities
+  - Sneak Attack
+  - Cunning Action
+  - Uncanny Dodge
+  - Evasion
+  - Thieves' Cant
+  - Expertise
+  - Reliable Talent
+  - Dash
+  - Disengage
+  - Hide
+
+  # General / Shared Spells
+  - Cantrip
+  - Concentration
+  - Ritual Casting
+  - Spellcasting
+  - Upcasting
+
+  # ============================================
+  # RACES & CLASSES
+  # ============================================
+  - Harengon
+  - Fairy
+  - Satyr
+  - Hexblood
+  - Owlin
+  - Bard
+  - Druid
+  - Rogue
+  - Circle of Spores
+  - College of Lore
+  - College of Eloquence
+  - College of Glamour
+  - Arcane Trickster
+  - Swashbuckler
+  - Thief
+
+  # ============================================
+  # D&D 5e CORE TERMS
+  # ============================================
+  - Advantage
+  - Disadvantage
+  - Saving Throw
+  - Ability Check
+  - Skill Check
+  - Attack Roll
+  - Damage Roll
+  - Hit Points
+  - Armor Class
+  - Difficulty Class
+  - Initiative
+  - Proficiency Bonus
+  - Inspiration
+  - Death Saving Throw
+  - Death Save
+  - Opportunity Attack
+  - Bonus Action
+  - Reaction
+  - Action Surge
+  - Short Rest
+  - Long Rest
+  - Hit Dice
+  - Spell Slots
+  - Spell Save DC
+  - Multiattack
+  - Grapple
+  - Grappled
+  - Prone
+  - Restrained
+  - Incapacitated
+  - Frightened
+  - Charmed
+  - Poisoned
+  - Stunned
+  - Paralyzed
+  - Petrified
+  - Blinded
+  - Deafened
+  - Exhaustion
+  - Nat Twenty
+  - Natural Twenty
+  - Critical Hit
+  - Crit
+
+  # ============================================
+  # ABILITY SCORES & SKILLS
+  # ============================================
+  - Strength
+  - Dexterity
+  - Constitution
+  - Intelligence
+  - Wisdom
+  - Charisma
+  - Acrobatics
+  - Animal Handling
+  - Arcana
+  - Athletics
+  - Deception
+  - History
+  - Insight
+  - Intimidation
+  - Investigation
+  - Medicine
+  - Nature
+  - Perception
+  - Performance
+  - Persuasion
+  - Religion
+  - Sleight of Hand
+  - Stealth
+  - Survival
 
 # Speaker diarization settings
 diarization:
   # Minimum number of speakers (if known)
-  min_speakers: null
+  min_speakers: 4
   
   # Maximum number of speakers (if known)
-  max_speakers: 6
+  max_speakers: 16
   
   # HuggingFace token for pyannote (required for diarization)
   # Set via environment variable: HUGGINGFACE_TOKEN
@@ -55,7 +546,7 @@ recap:
   model: gpt-4o
   
   # Clawdbot gateway URL (if using clawdbot provider)
-  clawdbot_url: http://localhost:18789
+  clawdbot_url: http://100.68.244.33:18789
   
   # Custom system prompt for recap generation
   system_prompt: |
@@ -80,3 +571,5 @@ speakers:
   SPEAKER_01: "Player 1"
   SPEAKER_02: "Player 2"
   SPEAKER_03: "Player 3"
+
+

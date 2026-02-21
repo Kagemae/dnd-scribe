@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}D&D Scribe — {{ session.name or session_id }}{% endblock %}
+
+{% block content %}
+<div class="session-header">
+    <div>
+        <h1 class="page-title">{{ session.name or session_id }}</h1>
+        <div class="session-meta">
+            {% if session.date %}
+            <span class="session-meta-item"><strong>Date:</strong> {{ session.date }}</span>
+            {% endif %}
+            {% if session.speakers %}
+            <span class="session-meta-item">
+                <strong>Speakers:</strong>
+                {{ session.speakers.values() | list | join(', ') }}
+            </span>
+            {% endif %}
+            {% if session.audio_file %}
+            <span class="session-meta-item"><strong>Audio:</strong> {{ session.audio_file | basename if session.audio_file is string else session.audio_file }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <a href="/" class="btn btn-secondary btn-small">Back to Dashboard</a>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+    <button class="tab active" data-tab="transcript">Transcript</button>
+    <button class="tab" data-tab="speakers">Speakers</button>
+    <button class="tab" data-tab="recap">Recap</button>
+    <button class="tab" data-tab="downloads">Files</button>
+</div>
+
+<!-- Transcript Tab -->
+<div id="tab-transcript" class="tab-content active">
+    {% if transcript_lines %}
+    <div class="transcript-viewer">
+        {% for line in transcript_lines %}
+        <div class="transcript-line">{{ line }}</div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No transcript text available.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Speakers Tab -->
+<div id="tab-speakers" class="tab-content">
+    {% if speaker_map %}
+    <form id="edit-speakers-form" data-session-id="{{ session_id }}">
+        <div class="speakers-grid">
+            {% for speaker_id, current_name in speaker_map.items() %}
+            <div class="speaker-edit-row">
+                <label class="speaker-edit-label">{{ speaker_id }}</label>
+                <input type="text"
+                       class="form-input speaker-edit-input"
+                       data-speaker-id="{{ speaker_id }}"
+                       value="{{ current_name }}"
+                       placeholder="Enter name...">
+            </div>
+            {% endfor %}
+        </div>
+        <div style="margin-top: 1.25rem;">
+            <button type="submit" class="btn btn-primary">Update Names</button>
+            <span id="speakers-save-status" style="margin-left: 1rem; font-size: 0.9rem; color: var(--text-muted);"></span>
+        </div>
+    </form>
+    {% else %}
+    <div class="empty-state">
+        <p>No speaker data available.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Recap Tab -->
+<div id="tab-recap" class="tab-content">
+    {% if recap_html %}
+    <div style="margin-bottom: 1rem; text-align: right;">
+        <button id="regenerate-recap-btn" class="btn btn-secondary btn-small"
+                data-session-id="{{ session_id }}">
+            Regenerate Recap
+        </button>
+    </div>
+    <div class="recap-viewer" id="recap-content">
+        {{ recap_html | safe }}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No recap generated yet.</p>
+        <button id="regenerate-recap-btn" class="btn btn-primary"
+                data-session-id="{{ session_id }}" style="margin-top: 1rem;">
+            Generate Recap
+        </button>
+        <div class="recap-viewer" id="recap-content" style="display:none;"></div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Downloads Tab -->
+<div id="tab-downloads" class="tab-content">
+    <ul class="download-list">
+        {% for f in files %}
+        <li>
+            <a href="/sessions/{{ session_id }}/download/{{ f }}">{{ f }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

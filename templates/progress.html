@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}D&D Scribe — Processing{% endblock %}
+
+{% block content %}
+<div id="progress-container" data-job-id="{{ job_id }}">
+    <div class="progress-container">
+        <div class="progress-icon">~</div>
+
+        <h1 class="page-title">{{ job.session_name }}</h1>
+        <p class="page-subtitle" style="margin-bottom: 1.5rem;">Processing your session recording...</p>
+
+        <div class="progress-percent" id="progress-percent">{{ job.progress_percent }}%</div>
+
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar-fill"
+                 style="width: {{ job.progress_percent }}%"></div>
+        </div>
+
+        <div class="progress-stage" id="progress-stage">
+            {% if job.status.value == 'queued' %}Queued
+            {% elif job.status.value == 'loading_model' %}Loading Model
+            {% elif job.status.value == 'transcribing' %}Transcribing
+            {% elif job.status.value == 'aligning' %}Aligning
+            {% elif job.status.value == 'diarizing' %}Diarizing Speakers
+            {% elif job.status.value == 'saving' %}Saving
+            {% elif job.status.value == 'generating_recap' %}Generating Recap
+            {% elif job.status.value == 'completed' %}Complete
+            {% elif job.status.value == 'failed' %}Failed
+            {% else %}Working...{% endif %}
+        </div>
+        <div class="progress-message" id="progress-message">{{ job.progress_message }}</div>
+
+        <div class="progress-log" id="progress-log">
+            {% if job.progress_message %}
+            <div class="log-entry">{{ job.progress_message }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
