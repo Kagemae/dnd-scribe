@@ -1,37 +1,38 @@
 /* ===================================================================
-   D&D Scribe — Tavern Chronicle
-   Dark, warm aesthetic with aged parchment textures and amber accents.
+   D&D Scribe — Arcane Ledger
+   Cool dark slate with golden accents. Designed for visual cohesion
+   with the dnd-session-wiki while maintaining its own warm identity.
    =================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 :root {
-    --bg-deep: #0c0a08;
-    --bg-surface: #161210;
-    --bg-card: #1e1a16;
-    --bg-card-hover: #252018;
-    --bg-elevated: #2a241e;
-    --border-subtle: #3a3228;
-    --border-warm: #5a4a38;
-    --text-primary: #e8dcc8;
-    --text-secondary: #a89878;
-    --text-muted: #7a6a58;
-    --accent-amber: #d4a044;
-    --accent-amber-dim: #a07830;
-    --accent-amber-glow: #d4a04440;
-    --accent-red: #c45040;
-    --accent-green: #5a9a50;
-    --accent-blue: #5088b8;
-    --parchment: #d8c8a8;
-    --parchment-dark: #b8a888;
+    --bg-deep: #0e1117;
+    --bg-surface: #161b22;
+    --bg-card: #1c2129;
+    --bg-card-hover: #222830;
+    --bg-elevated: #272d36;
+    --border-subtle: #30363d;
+    --border-warm: #4a4535;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --accent-amber: #e0a830;
+    --accent-amber-dim: #b8892a;
+    --accent-amber-glow: #e0a83040;
+    --accent-red: #f85149;
+    --accent-green: #3fb950;
+    --accent-blue: #58a6ff;
+    --parchment: #c9b078;
+    --parchment-dark: #a8925e;
     --font-display: 'Cinzel', serif;
     --font-body: 'Crimson Pro', serif;
     --font-mono: 'JetBrains Mono', monospace;
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
-    --shadow-card: 0 2px 12px rgba(0,0,0,0.4), 0 0 1px rgba(212,160,68,0.1);
-    --shadow-elevated: 0 8px 32px rgba(0,0,0,0.6), 0 0 2px rgba(212,160,68,0.15);
+    --shadow-card: 0 2px 12px rgba(0,0,0,0.4);
+    --shadow-elevated: 0 8px 32px rgba(0,0,0,0.6);
     --transition: 0.2s ease;
 }
 
@@ -58,8 +59,8 @@ body::before {
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(ellipse at 20% 0%, rgba(212,160,68,0.03) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 100%, rgba(160,120,48,0.02) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 0%, rgba(224,168,48,0.02) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(88,166,255,0.015) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
 }
@@ -305,7 +306,7 @@ body::before {
 }
 
 .btn-primary:hover {
-    background: #e0b050;
+    background: #eab840;
     box-shadow: 0 0 20px var(--accent-amber-glow);
 }
 
@@ -386,20 +387,20 @@ body::before {
 
 .badge-transcript {
     color: var(--accent-blue);
-    background: rgba(80,136,184,0.12);
-    border: 1px solid rgba(80,136,184,0.25);
+    background: rgba(88,166,255,0.1);
+    border: 1px solid rgba(88,166,255,0.2);
 }
 
 .badge-recap {
     color: var(--accent-green);
-    background: rgba(90,154,80,0.12);
-    border: 1px solid rgba(90,154,80,0.25);
+    background: rgba(63,185,80,0.1);
+    border: 1px solid rgba(63,185,80,0.2);
 }
 
 .badge-processing {
     color: var(--accent-amber);
-    background: rgba(212,160,68,0.12);
-    border: 1px solid rgba(212,160,68,0.25);
+    background: rgba(224,168,48,0.1);
+    border: 1px solid rgba(224,168,48,0.2);
 }
 
 /* ── Progress Page ── */
@@ -525,8 +526,8 @@ body::before {
 
 .vocab-remove-btn:hover {
     color: var(--accent-red);
-    border-color: rgba(196,80,64,0.3);
-    background: rgba(196,80,64,0.08);
+    border-color: rgba(248,81,73,0.3);
+    background: rgba(248,81,73,0.08);
 }
 
 /* ── Speaker Edit (session detail) ── */
@@ -631,7 +632,7 @@ body::before {
 }
 
 .sample-line + .sample-line {
-    border-top: 1px solid rgba(58,50,40,0.4);
+    border-top: 1px solid rgba(48,54,61,0.6);
 }
 
 .sample-timestamp {
@@ -757,7 +758,7 @@ body::before {
 }
 
 .transcript-line:hover {
-    background: rgba(212,160,68,0.04);
+    background: rgba(224,168,48,0.04);
 }
 
 /* Recap viewer */
@@ -877,14 +878,14 @@ body::before {
 }
 
 .alert-error {
-    background: rgba(196,80,64,0.1);
-    border: 1px solid rgba(196,80,64,0.3);
+    background: rgba(248,81,73,0.08);
+    border: 1px solid rgba(248,81,73,0.25);
     color: var(--accent-red);
 }
 
 .alert-success {
-    background: rgba(90,154,80,0.1);
-    border: 1px solid rgba(90,154,80,0.3);
+    background: rgba(63,185,80,0.08);
+    border: 1px solid rgba(63,185,80,0.25);
     color: var(--accent-green);
 }
 
