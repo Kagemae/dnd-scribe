@@ -572,4 +572,14 @@ speakers:
   SPEAKER_02: "Player 2"
   SPEAKER_03: "Player 3"
 
+# Wiki push settings
+# Push completed transcripts to dnd-session-wiki for review and recap generation
+wiki:
+  # Wiki API base URL (or set WIKI_URL env var)
+  url: ""
 
+  # API key for authentication (or set WIKI_API_KEY env var)
+  api_key: ""
+
+  # Automatically push when a transcription job completes
+  auto_push: true

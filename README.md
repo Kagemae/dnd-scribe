@@ -1,14 +1,38 @@
-# D&D Scribe 🎲📜
+# D&D Scribe
 
-Automated transcription and session notes for tabletop RPG sessions.
+Audio transcription pipeline for tabletop RPG sessions.
 
-Records audio, identifies speakers, transcribes the session, and generates recap notes — all locally, with no ongoing API costs.
+Records audio, identifies speakers via diarization, and transcribes the session using Whisper — all locally on GPU. Completed transcripts are pushed to [dnd-session-wiki](https://github.com/Kagemae/dnd-session-wiki) for review, cleanup, and recap generation.
+
+## Architecture
+
+```
+                        dnd-scribe (this repo)                    dnd-session-wiki
+                        ~~~~~~~~~~~~~~~~~~~~~~                    ~~~~~~~~~~~~~~~~
+
+Audio File ──> [whisperX] ──> Transcription + Diarization
+                                      |
+                              Speaker Identification
+                                (local web UI)
+                                      |
+                              transcript.json + session.yaml
+                                      |
+                                 API Push ──────────────────> POST /api/sessions/ingest
+                                                                      |
+                                                              DM reviews & cleans
+                                                              up wording/speakers
+                                                                      |
+                                                              [LLM] ──> Recap
+                                                                      |
+                                                               Campaign Wiki
+```
 
 ## Features
 
 - **Speaker Diarization** — Automatically identifies and labels different speakers
-- **High-Quality Transcription** — Powered by Whisper
-- **Smart Recaps** — LLM-generated session summaries with key events, combat highlights, and plot developments
+- **High-Quality Transcription** — Powered by Whisper (large-v3 on GPU)
+- **Local Web UI** — Browser-based interface for running transcription jobs and identifying speakers
+- **Wiki Integration** — Push completed transcripts to dnd-session-wiki via API
 - **Batch Processing** — Designed for post-session processing (no real-time requirements)
 - **Fully Local** — Runs on your own hardware, no cloud dependencies
 
@@ -17,7 +41,7 @@ Records audio, identifies speakers, transcribes the session, and generates recap
 - Python 3.10+
 - ffmpeg
 - **GPU (optional but recommended):** CUDA-capable NVIDIA GPU with 8GB+ VRAM
-- **CPU-only:** Works fine, just slower. Expect ~1-2x realtime (4hr session ≈ 4-8hr processing)
+- **CPU-only:** Works fine, just slower. Expect ~1-2x realtime (4hr session = 4-8hr processing)
 
 ### Hardware Recommendations
 
@@ -39,7 +63,7 @@ Records audio, identifies speakers, transcribes the session, and generates recap
 
 2. **CUDA Toolkit 12.8+** — Required for GPU acceleration
    - Download from: https://developer.nvidia.com/cuda-downloads
-   - Select: Windows → x86_64 → 11 → exe (local)
+   - Select: Windows > x86_64 > 11 > exe (local)
    - Run installer, default options are fine
    - Verify: `nvcc --version` in a new terminal
 
@@ -65,7 +89,7 @@ Records audio, identifies speakers, transcribes the session, and generates recap
 
 ```powershell
 # Clone the repo
-git clone https://github.com/kagemae/dnd-scribe.git
+git clone https://github.com/Kagemae/dnd-scribe.git
 cd dnd-scribe
 
 # Create virtual environment
@@ -120,7 +144,7 @@ python scribe.py process test.wav --output ./test-output/
 
 ```bash
 # Clone the repo
-git clone https://github.com/kagemae/dnd-scribe.git
+git clone https://github.com/Kagemae/dnd-scribe.git
 cd dnd-scribe
 
 # Create virtual environment
@@ -136,61 +160,80 @@ pip install -r requirements.txt
 
 ## Usage
 
-### 1. Record Your Session
-
-Record your D&D session as a WAV or MP3 file. Any decent recording setup works — a USB mic in the center of the table, a phone, etc.
-
-### 2. Process the Recording
+### Web UI (recommended)
 
 ```bash
+python web.py
+# Browse to http://localhost:8000
+```
+
+The web interface lets you:
+- Start transcription jobs from uploaded or local audio files
+- Track progress in real-time via SSE
+- Identify speakers by reviewing sample quotes
+- View transcripts and push completed sessions to the wiki
+
+### CLI
+
+```bash
+# Transcribe an audio file
 python scribe.py process /path/to/session.wav --output ./sessions/2026-02-05/
-```
 
-### 3. Configure Speaker Names
+# Transcribe and push to wiki in one step
+python scribe.py process /path/to/session.wav --push
 
-On first run, the tool will identify speakers as "Speaker 1", "Speaker 2", etc. Edit `speakers.json` to map these to actual names:
+# Push an existing session to the wiki
+python scribe.py push ./sessions/2026-02-20-witchlight/
 
-```json
-{
-  "SPEAKER_00": "Jason (DM)",
-  "SPEAKER_01": "Michael",
-  "SPEAKER_02": "Rhys",
-  "SPEAKER_03": "Alisha"
-}
-```
-
-### 4. Generate Session Recap
-
-```bash
+# Regenerate a recap locally
 python scribe.py recap ./sessions/2026-02-05/transcript.json
 ```
 
+## Wiki Integration
+
+Completed transcripts are pushed to [dnd-session-wiki](https://github.com/Kagemae/dnd-session-wiki) where the DM can review speaker assignments, clean up wording, and generate recaps.
+
+### Configuration
+
+Add the wiki URL to `config.yaml`:
+
+```yaml
+wiki:
+  url: "http://your-wiki-host:port"
+  api_key: ""        # optional
+  auto_push: true    # push automatically when jobs complete
+```
+
+Or use environment variables: `WIKI_URL`, `WIKI_API_KEY`.
+
+### Push methods
+
+1. **Auto-push** — When `wiki.auto_push` is `true` and a URL is configured, transcripts are pushed automatically after each job completes.
+2. **Web UI button** — Click "Push to Wiki" on any session page.
+3. **CLI** — `python scribe.py push ./sessions/<session-dir>/`
+
+### Interface contract
+
+The push payload format is documented in [`interface/INTERFACE.md`](interface/INTERFACE.md). dnd-scribe owns this spec as the producer. The wiki validates incoming payloads against it.
+
 ## Output
 
-Each processed session creates:
-- `transcript.json` — Full transcript with timestamps and speaker labels
+Each processed session creates a directory under `sessions/` containing:
+- `session.yaml` — Session metadata (name, date, speakers)
+- `transcript.json` — Full transcript with timestamps, speaker labels, and word-level timing
 - `transcript.txt` — Human-readable transcript
-- `recap.md` — AI-generated session summary
+- `transcript.srt` — Subtitle file
+- `recap.md` — AI-generated session summary (if generated locally)
 
 ## Configuration
 
 Edit `config.yaml` to customize:
-- Whisper model size (tiny/base/small/medium/large)
-- Speaker diarization sensitivity
-- Recap prompts and style
+- Whisper model size (tiny/base/small/medium/large-v3)
+- Speaker diarization settings (min/max speakers)
+- Vocabulary list for D&D-specific term recognition
+- Wiki push settings
+- Recap prompts and LLM provider (for local recap generation)
 - Output formats
-
-## Architecture
-
-```
-Audio File
-    ↓
-[whisperX] → Transcription + Diarization
-    ↓
-Speaker-labeled transcript
-    ↓
-[LLM] → Session recap & notes
-```
 
 ## License
 

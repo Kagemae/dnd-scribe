@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pipeline
+import wiki_push
 
 
 class JobStatus(str, Enum):
@@ -27,6 +28,7 @@ class JobStatus(str, Enum):
     AWAITING_SPEAKERS = "awaiting_speakers"
     SAVING = "saving"
     GENERATING_RECAP = "generating_recap"
+    PUSHING_TO_WIKI = "pushing_to_wiki"
     COMPLETED = "completed"
     FAILED = "failed"
 
@@ -163,9 +165,31 @@ class JobManager:
                 transcript_json = str(output_dir / "transcript.json")
                 pipeline.generate_recap(transcript_json, job.config, output_dir)
 
+            # Auto-push to wiki if configured
+            wiki_cfg = job.config.get("wiki", {})
+            wiki_url = wiki_cfg.get("url", "")
+            if wiki_url and wiki_cfg.get("auto_push", True):
+                with self._lock:
+                    job.status = JobStatus.PUSHING_TO_WIKI
+                    job.progress_message = "Pushing to wiki..."
+                    job.progress_percent = 98
+                try:
+                    wiki_push.push_to_wiki(
+                        output_dir, wiki_url, wiki_cfg.get("api_key", "")
+                    )
+                except Exception as push_err:
+                    # Push failure is non-fatal — log but don't fail the job
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "Wiki push failed: %s", push_err
+                    )
+                    with self._lock:
+                        job.progress_message = f"Done (wiki push failed: {push_err})"
+
             with self._lock:
                 job.status = JobStatus.COMPLETED
-                job.progress_message = "Done!"
+                if "wiki push failed" not in job.progress_message:
+                    job.progress_message = "Done!"
                 job.progress_percent = 100
                 job.transcript = None  # Free memory
 

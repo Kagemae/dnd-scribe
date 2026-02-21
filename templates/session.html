@@ -20,7 +20,14 @@
             {% endif %}
         </div>
     </div>
-    <a href="/" class="btn btn-secondary btn-small">Back to Dashboard</a>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button id="push-to-wiki-btn" class="btn btn-primary btn-small"
+                data-session-id="{{ session_id }}">
+            Push to Wiki
+        </button>
+        <span id="push-status" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+        <a href="/" class="btn btn-secondary btn-small">Back to Dashboard</a>
+    </div>
 </div>
 
 <!-- Tabs -->

@@ -20,6 +20,7 @@ from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 
 import pipeline
+import wiki_push
 from jobs import JobManager
 
 load_dotenv()
@@ -397,6 +398,27 @@ async def regenerate_recap(session_id: str):
     import markdown
     recap_html = markdown.markdown(recap_text, extensions=["tables", "fenced_code"])
     return {"html": recap_html, "text": recap_text}
+
+
+@app.post("/api/sessions/{session_id}/push")
+async def push_to_wiki(session_id: str):
+    """Push a completed session to the dnd-session-wiki."""
+    session_dir = SESSIONS_DIR / session_id
+    if not (session_dir / "transcript.json").exists():
+        raise HTTPException(status_code=404, detail="No transcript found for this session")
+
+    wiki_cfg = config.get("wiki", {})
+    wiki_url = wiki_cfg.get("url", "")
+    if not wiki_url:
+        raise HTTPException(status_code=400, detail="No wiki URL configured in config.yaml")
+
+    try:
+        result = wiki_push.push_to_wiki(
+            session_dir, wiki_url, wiki_cfg.get("api_key", "")
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Wiki push failed: {e}")
 
 
 @app.get("/sessions/{session_id}/download/{filename}")

@@ -98,6 +98,7 @@ function formatStage(status) {
         'awaiting_speakers': 'Awaiting Speaker Names',
         'saving': 'Saving',
         'generating_recap': 'Generating Recap',
+        'pushing_to_wiki': 'Pushing to Wiki',
         'completed': 'Complete',
         'failed': 'Failed',
     };
@@ -298,6 +299,44 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// ── Push to Wiki ──
+
+function initPushToWiki() {
+    const btn = document.getElementById('push-to-wiki-btn');
+    if (!btn) return;
+
+    const sessionId = btn.dataset.sessionId;
+    const statusEl = document.getElementById('push-status');
+
+    btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Pushing...';
+        if (statusEl) statusEl.textContent = '';
+
+        try {
+            const resp = await fetch(`/api/sessions/${sessionId}/push`, { method: 'POST' });
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(data.detail || 'Push failed');
+            }
+
+            if (statusEl) {
+                statusEl.style.color = 'var(--accent-green)';
+                statusEl.textContent = 'Pushed!';
+            }
+        } catch (err) {
+            if (statusEl) {
+                statusEl.style.color = 'var(--accent-red)';
+                statusEl.textContent = err.message;
+            }
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Push to Wiki';
+        }
+    });
+}
+
 // ── Init ──
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -307,4 +346,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initRecapRegenerate();
     initEditSpeakers();
+    initPushToWiki();
 });
