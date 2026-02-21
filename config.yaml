@@ -576,7 +576,7 @@ speakers:
 # Push completed transcripts to dnd-session-wiki for review and recap generation
 wiki:
   # Wiki API base URL (or set WIKI_URL env var)
-  url: ""
+  url: "http://100.87.125.93:3002"
 
   # API key for authentication (or set WIKI_API_KEY env var)
   api_key: ""

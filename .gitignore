@@ -30,6 +30,7 @@ models/
 # Secrets
 .env
 *.token
+.mcp.json
 
 # OS
 .DS_Store
